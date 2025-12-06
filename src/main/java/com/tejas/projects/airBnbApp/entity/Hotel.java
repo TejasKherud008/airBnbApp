@@ -3,6 +3,7 @@ package com.tejas.projects.airBnbApp.entity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -12,6 +13,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "hotel")
 public class Hotel {
@@ -43,5 +45,7 @@ public class Hotel {
     @Column(nullable = false)
     private Boolean active;
 
+    @ManyToOne
+    private User owner;
 
 }
