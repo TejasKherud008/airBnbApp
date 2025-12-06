@@ -5,6 +5,7 @@ import com.tejas.projects.airBnbApp.entity.Hotel;
 import com.tejas.projects.airBnbApp.exception.ResourceNotFoundException;
 import com.tejas.projects.airBnbApp.repository.HotelRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -56,6 +57,15 @@ public class HotelServiceImplementation implements HotelService{
        if(!exists) throw new ResourceNotFoundException("Hotel Not Found With Id :- " + id);
 
        hotelRepository.deleteById(id);
+    }
+
+    @Override
+    @Transactional
+    public void activateHotel(Long id) {
+        log.info("Activating Hotel by id {} ",id);
+        Hotel hotel = hotelRepository.findById(id)
+                .orElseThrow(()-> new ResourceNotFoundException("Hotel Not Found By Id :- " + id));
+        hotel.setActive(true);
     }
 
 

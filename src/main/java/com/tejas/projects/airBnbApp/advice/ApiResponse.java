@@ -1,7 +1,10 @@
 package com.tejas.projects.airBnbApp.advice;
 
+import lombok.Data;
+
 import java.time.LocalDateTime;
 
+@Data
 public class ApiResponse<T> {
 
     private LocalDateTime timeStamp;
