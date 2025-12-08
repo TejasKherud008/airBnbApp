@@ -2,6 +2,7 @@ package com.tejas.projects.airBnbApp.service;
 
 import com.tejas.projects.airBnbApp.dto.HotelDto;
 import com.tejas.projects.airBnbApp.entity.Hotel;
+import com.tejas.projects.airBnbApp.entity.Room;
 import com.tejas.projects.airBnbApp.exception.ResourceNotFoundException;
 import com.tejas.projects.airBnbApp.repository.HotelRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -19,6 +20,8 @@ public class HotelServiceImplementation implements HotelService{
     private final HotelRepository hotelRepository;
 
     private final ModelMapper modelMapper;
+
+    private final InventoryService inventoryService;
 
     @Override
     public HotelDto createHotel(HotelDto hotelDto) {
@@ -52,11 +55,18 @@ public class HotelServiceImplementation implements HotelService{
     }
 
     @Override
+    @Transactional
     public void deleteHotelById(Long id) {
-       Boolean exists = hotelRepository.existsById(id);
-       if(!exists) throw new ResourceNotFoundException("Hotel Not Found With Id :- " + id);
+       Hotel hotel = hotelRepository
+               .findById(id)
+               .orElseThrow(()-> new ResourceNotFoundException("Hotel  Not Found With Id :- " + id));
 
        hotelRepository.deleteById(id);
+
+       for(Room room: hotel.getRooms()){
+           inventoryService.deleteFutureInventories(room);
+       }
+
     }
 
     @Override
@@ -66,6 +76,12 @@ public class HotelServiceImplementation implements HotelService{
         Hotel hotel = hotelRepository.findById(id)
                 .orElseThrow(()-> new ResourceNotFoundException("Hotel Not Found By Id :- " + id));
         hotel.setActive(true);
+
+        //assuming Only do it once
+        for(Room room: hotel.getRooms()){
+            inventoryService.initializedRoomForYear(room);
+        }
+
     }
 
 
